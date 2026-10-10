@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Syed Jasim Ali — professional video editor. Explore long-form video edits and short-form content." />
+  <title>Syed Jasim Ali | Video Editor</title>
+  <style>
+    :root {
+      --bg: #090909;
+      --panel: #111111;
+      --panel-2: #171717;
+      --red: #ff2638;
+      --red-dark: #bd1021;
+      --white: #f5f5f5;
+      --muted: #a6a6a6;
+      --line: rgba(255,255,255,.11);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--bg); color: var(--white);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .container { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20; background: rgba(9,9,9,.88);
+      backdrop-filter: blur(14px); border-bottom: 1px solid var(--line);
+    }
+    .nav { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { font-weight: 900; letter-spacing: -.04em; font-size: 1.15rem; display:flex; align-items:center; gap:10px; }
+    .brand span { color: var(--red); }
+    .logo-slot { width:42px; height:42px; border:1px dashed rgba(255,38,56,.8); border-radius:10px; display:grid; place-items:center; overflow:hidden; background:rgba(255,38,56,.08); box-shadow:0 0 18px rgba(255,38,56,.12); flex-shrink:0; }
+    .logo-slot img { width:100%; height:100%; object-fit:cover; display:block; }
+    .logo-placeholder { font-size:10px; letter-spacing:.04em; color:#ff6976; font-weight:900; }
+    .logo-picker { display:none; }
+    .logo-edit { border:0; background:transparent; color:#ff6976; cursor:pointer; font:inherit; font-size:.72rem; padding:3px 0 0; display:block; }
+    .logo-edit:hover { color:white; text-shadow:0 0 12px rgba(255,38,56,.9); }
+    .nav-links { display: flex; gap: 28px; align-items: center; color: #d5d5d5; font-size: .92rem; }
+    .nav-links a:hover { color: var(--red); }
+    .nav-cta { padding: 10px 16px; border: 1px solid var(--red); border-radius: 7px; color: white; }
+    .hero { min-height: 660px; display: grid; align-items: center; position: relative; overflow: hidden; }
+    .hero::before {
+      content: ""; position: absolute; width: 520px; height: 520px; right: -90px; top: 60px;
+      background: radial-gradient(circle, rgba(255,38,56,.20), rgba(255,38,56,0) 68%);
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: 56px; padding: 80px 0; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: #ff6976; text-transform: uppercase; letter-spacing: .18em; font-size: .76rem; font-weight: 800; }
+    .eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--red); }
+    h1 { font-size: clamp(3.2rem, 7vw, 6.3rem); line-height: .99; letter-spacing: -.07em; margin: 22px 0; }
+    h1 span { color: var(--red); display: block; }
+    .hero p { color: #bcbcbc; max-width: 570px; font-size: 1.08rem; margin: 0 0 30px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; }
+    .btn { display: inline-flex; justify-content: center; align-items: center; gap: 10px; padding: 14px 21px; border-radius: 7px; font-weight: 800; transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; cursor: pointer; position:relative; }
+    .btn:focus-visible, .tab:focus-visible, a:focus-visible { outline:2px solid #ff6976; outline-offset:4px; }
+    .btn:active { transform:scale(.97); }
+    .btn-primary { animation: redPulse 3s ease-in-out infinite; }
+    .btn-primary:hover { box-shadow:0 0 18px rgba(255,38,56,.6), 0 0 42px rgba(255,38,56,.26); }
+    .btn-outline:hover { box-shadow:0 0 18px rgba(255,38,56,.2), inset 0 0 12px rgba(255,38,56,.05); }
+    @keyframes redPulse { 0%,100% { box-shadow:0 0 10px rgba(255,38,56,.12); } 50% { box-shadow:0 0 23px rgba(255,38,56,.27); } }
+    .glow-orb { position:absolute; width:240px; height:240px; border-radius:50%; background:rgba(255,38,56,.10); filter:blur(65px); pointer-events:none; animation: drift 7s ease-in-out infinite alternate; }
+    @keyframes drift { from { transform:translate(-15px,-8px); } to { transform:translate(20px,18px); } }
+    .toast { position:fixed; right:22px; bottom:22px; z-index:100; max-width:min(380px, calc(100% - 44px)); background:#171717; color:#fff; border:1px solid rgba(255,38,56,.7); border-radius:12px; padding:15px 18px; box-shadow:0 0 30px rgba(255,38,56,.22); opacity:0; transform:translateY(18px); pointer-events:none; transition:opacity .25s, transform .25s; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .toast strong { color:#ff6976; display:block; margin-bottom:3px; }
+    .toast small { color:#bbb; }
+    .sample-thumb:hover .thumb-play { box-shadow:0 0 25px rgba(255,38,56,.85); transform:scale(1.08); }
+    .thumb-play { transition:transform .2s, box-shadow .2s; }
+    .btn:hover { transform: translateY(-3px); }
+    .btn-primary { background: var(--red); color: white; border: 1px solid var(--red); box-shadow: 0 10px 35px rgba(255,38,56,.18); }
+    .btn-primary:hover { background: #e91e30; }
+    .btn-outline { border: 1px solid #444; color: white; background: transparent; }
+    .btn-outline:hover { border-color: var(--red); }
+    .hero-card {
+      min-height: 390px; border: 1px solid rgba(255,255,255,.13); border-radius: 20px;
+      background: linear-gradient(145deg, #1a1a1a, #0c0c0c 68%); padding: 28px; position: relative;
+      box-shadow: 0 35px 90px rgba(0,0,0,.45);
+    }
+    .hero-card::after { content: ""; position: absolute; inset: 12px; border: 1px solid rgba(255,38,56,.20); border-radius: 13px; pointer-events: none; }
+    .play-symbol { width: 82px; height: 82px; border-radius: 50%; display: grid; place-items: center; background: var(--red); margin: 45px auto 30px; box-shadow: 0 0 55px rgba(255,38,56,.27); }
+    .play-symbol svg { margin-left: 5px; }
+    .card-kicker { color: var(--red); text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; font-weight: 900; text-align: center; }
+    .hero-card h2 { font-size: 2rem; letter-spacing: -.04em; text-align: center; margin: 8px 0; }
+    .hero-card p { text-align: center; font-size: .9rem; margin: 0 auto; max-width: 280px; }
+    .mini-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 32px; }
+    .mini-stats div { border-top: 1px solid var(--line); padding-top: 13px; text-align: center; }
+    .mini-stats strong { display: block; font-size: 1rem; }
+    .mini-stats span { color: var(--muted); font-size: .72rem; }
+    section { padding: 94px 0; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 25px; margin-bottom: 36px; }
+    .section-label { color: var(--red); font-size: .76rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 900; }
+    h2.section-title { font-size: clamp(2.2rem, 4vw, 3.6rem); line-height: 1.05; letter-spacing: -.055em; margin: 9px 0 0; }
+    .section-head p { max-width: 390px; margin: 0; color: var(--muted); }
+    .work-section { background: #0e0e0e; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .category-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 22px; }
+    .category-card {
+      position: relative; min-height: 260px; padding: 32px; border: 1px solid #2b2b2b; border-radius: 15px;
+      overflow: hidden; background: linear-gradient(135deg, #191919, #101010); transition: border-color .2s, transform .2s;
+    }
+    .category-card:hover { border-color: var(--red); transform: translateY(-4px); }
+    .category-card::before { content: ""; position: absolute; width: 220px; height: 220px; right: -50px; bottom: -90px; border-radius: 50%; border: 1px solid rgba(255,38,56,.45); box-shadow: 0 0 0 22px rgba(255,38,56,.04), 0 0 0 45px rgba(255,38,56,.025); }
+    .category-number { color: var(--red); font-size: .8rem; letter-spacing: .14em; font-weight: 900; }
+    .category-card h3 { font-size: 2rem; letter-spacing: -.04em; margin: 18px 0 8px; }
+    .category-card p { color: var(--muted); max-width: 390px; margin: 0 0 24px; }
+    .text-link { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; color: white; }
+    .text-link span { color: var(--red); font-size: 1.3rem; }
+    .samples { padding-top: 65px; }
+    .sample-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 22px; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab { background: #151515; color: #bbb; border: 1px solid #303030; padding: 10px 15px; border-radius: 6px; cursor: pointer; font: inherit; font-size: .9rem; }
+    .tab.active, .tab:hover { background: var(--red); border-color: var(--red); color: white; }
+    .sample-note { color: #777; font-size: .83rem; }
+    .sample-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+    .sample-card { background: var(--panel); border: 1px solid #282828; border-radius: 11px; overflow: hidden; }
+    .sample-thumb { aspect-ratio: 16/9; background-color:#171717; background-position:center; background-size:cover; background-repeat:no-repeat; display:grid; place-items:center; position:relative; isolation:isolate; }
+    .sample-thumb::before { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.48)); }
+    /* Sample thumbnails: replace these image URLs with your own local assets whenever you like. */
+    /* OWNER: replace assets/thumbnails/thumbnail-1.jpg to change this card image. */
+    .sample-card:nth-child(1) .sample-thumb { background-image:url('assets/thumbnails/thumbnail-1.jpg'), url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=85'); }
+    /* OWNER: replace assets/thumbnails/thumbnail-2.jpg to change this card image. */
+    .sample-card:nth-child(2) .sample-thumb { background-image:url('assets/thumbnails/thumbnail-2.jpg'), url('https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=1200&q=85'); }
+    /* OWNER: replace assets/thumbnails/thumbnail-3.jpg to change this card image. */
+    .sample-card:nth-child(3) .sample-thumb { background-image:url('assets/thumbnails/thumbnail-3.jpg'), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=85'); }
+    /* OWNER: replace assets/thumbnails/thumbnail-4.jpg to change this card image. */
+    .sample-card:nth-child(4) .sample-thumb { background-image:url('assets/thumbnails/thumbnail-4.jpg'), url('https://images.unsplash.com/photo-1536240478700-b869070f9279?auto=format&fit=crop&w=1200&q=85'); }
+    /* OWNER: replace assets/thumbnails/thumbnail-5.jpg to change this card image. */
+    .sample-card:nth-child(5) .sample-thumb { background-image:url('assets/thumbnails/thumbnail-5.jpg'), url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1200&q=85'); }
+    /* OWNER: replace assets/thumbnails/thumbnail-6.jpg to change this card image. */
+    .sample-card:nth-child(6) .sample-thumb { background-image:url('assets/thumbnails/thumbnail-6.jpg'), url('https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=85'); }
+    .thumb-play { width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(255,255,255,.65); background: rgba(255,38,56,.88); display: grid; place-items: center; }
+    .sample-thumb::after { content:""; position:absolute; inset:0; display:flex; align-items:flex-end; padding:0 15px 13px; box-sizing:border-box; background:linear-gradient(0deg,rgba(0,0,0,.48),transparent 55%); color:rgba(255,255,255,.92); font-size:.65rem; letter-spacing:.15em; font-weight:900; pointer-events:none; }
+    .sample-card:nth-child(1) .sample-thumb::after { content:"DOCUMENTARY EDIT"; }
+    .sample-card:nth-child(2) .sample-thumb::after { content:"EXPLAINER VIDEO"; }
+    .sample-card:nth-child(3) .sample-thumb::after { content:"SHORT-FORM EDIT"; }
+    .sample-card:nth-child(4) .sample-thumb::after { content:"REEL / SOCIAL"; }
+    .sample-card:nth-child(5) .sample-thumb::after { content:"CINEMATIC STORY"; }
+    .sample-card:nth-child(6) .sample-thumb::after { content:"FAST-PACED SHORT"; }
+    .sample-info { padding: 17px; }
+    .sample-info h3 { font-size: 1rem; margin: 0 0 5px; }
+    .sample-info p { color: var(--muted); font-size: .84rem; margin: 0; }
+    .sample-info .edit-tip { color: #6f6f6f; font-size: .75rem; margin-top: 10px; }
+    .about-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: start; }
+    .about-mark { min-height: 360px; border-radius: 15px; border: 1px solid #2c2c2c; background: linear-gradient(145deg, #1b1b1b, #0c0c0c); display: grid; place-items: center; position: relative; overflow: hidden; box-shadow:0 0 35px rgba(255,38,56,.07); }
+    .about-mark strong { font-size: clamp(5rem, 10vw, 8rem); color: var(--red); letter-spacing: -.1em; text-shadow: 0 15px 60px rgba(255,38,56,.18); }
+    .about-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+    .about-mark::after { content: "VIDEO EDITOR"; position: absolute; bottom: 24px; font-size: .7rem; letter-spacing: .3em; color: #ddd; text-shadow:0 2px 8px #000; z-index:2; }
+    .software-block { margin-top:30px; }
+    .software-heading { color:var(--red); font-size:.75rem; font-weight:900; letter-spacing:.17em; margin-bottom:14px; }
+    .software-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .software-item { min-width:0; display:flex; flex-direction:column; align-items:center; gap:9px; padding:15px 8px; background:#111; border:1px solid #2d2d2d; border-radius:10px; transition:transform .2s,border-color .2s,box-shadow .2s; }
+    .software-item:hover { transform:translateY(-3px); border-color:var(--red); box-shadow:0 0 20px rgba(255,38,56,.16); }
+    .software-item img,.software-fallback { width:42px; height:42px; object-fit:contain; border-radius:8px; }
+    .software-fallback { display:none; place-items:center; background:#251014; color:#ff6574; border:1px solid rgba(255,38,56,.4); font-weight:900; font-size:.95rem; }
+    .software-item small { color:#c8c8c8; text-align:center; font-size:.72rem; line-height:1.25; }
+    .about-copy h2 { font-size: clamp(2rem,4vw,3.2rem); line-height: 1.08; letter-spacing: -.05em; margin: 10px 0 18px; }
+    .about-copy p { color: #b2b2b2; }
+    .skills { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 25px; }
+    .skill { padding: 8px 12px; border: 1px solid #333; background: #121212; border-radius: 5px; color: #ddd; font-size: .82rem; }
+    .contact-section { background: linear-gradient(180deg, #0d0d0d, #16090b); border-top: 1px solid var(--line); }
+    .contact-panel { border: 1px solid rgba(255,38,56,.35); background: rgba(15,15,15,.78); border-radius: 16px; padding: clamp(28px,5vw,55px); display: flex; justify-content: space-between; align-items: center; gap: 35px; }
+    .contact-panel h2 { font-size: clamp(2rem,4vw,3.5rem); letter-spacing: -.055em; line-height: 1.06; margin: 8px 0 13px; }
+    .contact-panel p { color: var(--muted); margin: 0; }
+    .contact-details { display: grid; gap: 12px; margin-top: 24px; color: #ddd; }
+    .contact-details a:hover { color: var(--red); }
+    footer { padding: 25px 0; border-top: 1px solid var(--line); color: #777; font-size: .82rem; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 15px; flex-wrap: wrap; }
+    .hidden { display: none !important; }
+    @media (max-width: 800px) {
+      .hero-grid, .about-grid { grid-template-columns: 1fr; gap: 35px; }
+      .hero { min-height: auto; }
+      .hero-grid { padding: 70px 0; }
+      .hero-card { min-height: 330px; }
+      .section-head, .contact-panel { align-items: start; flex-direction: column; }
+      .sample-grid { grid-template-columns: repeat(2,1fr); }
+      .nav-links { gap: 14px; }
+      .nav-links a:not(.nav-cta) { display: none; }
+    }
+    @media (max-width: 520px) {
+      .container { width: min(100% - 28px, 1120px); }
+      .nav { height: 66px; }
+      .nav-cta { padding: 8px 11px; font-size: .82rem; }
+      .hero-grid { padding: 56px 0; }
+      h1 { font-size: clamp(3rem, 16vw, 4.6rem); }
+      section { padding: 68px 0; }
+      .category-grid, .sample-grid { grid-template-columns: 1fr; }
+      .category-card { min-height: 230px; padding: 25px; }
+      .sample-toolbar { align-items: start; flex-direction: column; }
+      .hero-card { padding: 20px; }
+      .software-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .about-mark { min-height:280px; }
+      .mini-stats { gap:6px; }
+      .mini-stats strong { font-size:.86rem; }
+      .mini-stats span { font-size:.67rem; }
+      .actions .btn { flex:1 1 145px; }
+      .contact-panel .btn { width:100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <div>
+        <a class="brand" href="#home" aria-label="Jasim home">
+          <!-- OWNER ONLY: Replace assets/logo.png with your logo file. Visitors cannot upload or change this logo. -->
+          <span class="logo-slot"><img src="assets/logo.png" alt="Syed Editz logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" /><span class="logo-placeholder" style="display:none">LOGO</span></span>
+          <span>JASIM<span>.</span></span>
+        </a>
+      </div>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#work">My Work</a>
+        <a href="#about">About</a>
+        <a href="https://wa.me/923350457822?text=Hi%20Jasim%2C%20I%27m%20interested%20in%20your%20video%20editing%20services." class="nav-cta" target="_blank" rel="noopener">Let’s Talk ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="glow-orb" style="right:8%;top:18%"></div>
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Video Editor · Creative Storytelling</div>
+          <h1>Syed Jasim <span>Ali.</span></h1>
+          <p>I turn raw footage into engaging stories. From cinematic long-form videos to fast-paced Shorts, I focus on clean cuts, strong pacing, sound, and visuals that keep viewers watching.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="#work">See My Work <span aria-hidden="true">↘</span></a>
+            <a class="btn btn-outline" href="#contact">Contact Me</a>
+          </div>
+        </div>
+        <div class="hero-card" aria-label="Video editing portfolio introduction">
+          <div class="play-symbol">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg>
+          </div>
+          <div class="card-kicker">Ideas into impact</div>
+          <h2>Every frame<br/>has a purpose.</h2>
+          <p>Thoughtful edits. Powerful pacing. Stories that stay with people.</p>
+          <div class="mini-stats">
+            <div><strong>Long-form</strong><span>Story-driven</span></div>
+            <div><strong>Short-form</strong><span>Fast & engaging</span></div>
+            <div><strong>Creative</strong><span>Detail-focused</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="work-section" id="work">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-label">Selected projects</div>
+            <h2 class="section-title">See my work.</h2>
+          </div>
+          <p>Explore my edits by format. Replace the sample cards with your own videos whenever you’re ready.</p>
+        </div>
+
+        <div class="category-grid">
+          <a class="category-card" href="#samples" data-filter-link="long">
+            <div class="category-number">01 / LONG-FORM</div>
+            <h3>Long Videos</h3>
+            <p>Documentaries, YouTube videos, explainers, storytelling, and polished edits built to hold attention.</p>
+            <span class="text-link">Explore long videos <span>↗</span></span>
+          </a>
+          <a class="category-card" href="#samples" data-filter-link="shorts">
+            <div class="category-number">02 / SHORT-FORM</div>
+            <h3>Shorts</h3>
+            <p>Reels, YouTube Shorts, TikToks, punchy cuts, captions, sound design, and scroll-stopping pacing.</p>
+            <span class="text-link">Explore shorts <span>↗</span></span>
+          </a>
+        </div>
+
+        <div class="samples" id="samples">
+          <div class="sample-toolbar">
+            <div class="tabs" role="tablist" aria-label="Filter work samples">
+              <button class="tab active" type="button" data-filter="all">All Work</button>
+              <button class="tab" type="button" data-filter="long">Long Videos</button>
+              <button class="tab" type="button" data-filter="shorts">Shorts</button>
+            </div>
+            <div class="sample-note">See my work</div>
+          </div>
+          <div class="sample-grid">
+            <article class="sample-card" data-type="long">
+              <a class="sample-thumb video-link" href="https://drive.google.com/drive/folders/19hUbWX-SgMwCxtV4ksmfncqAwDT6TI-x?usp=sharing">
+                <span class="thumb-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg></span>
+              </a>
+              <div class="sample-info"><h3>Documentary / YouTube Edit</h3><p>Long Videos · Replace with your project</p><div class="edit-tip">See this and hire me</div></div>
+            </article>
+            <article class="sample-card" data-type="long">
+              <a class="sample-thumb video-link" href="https://drive.google.com/drive/folders/1w4SWX4YP_dcUQ4urnGR7qyDJ-f_1OQkQ?usp=sharing">
+                <span class="thumb-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg></span>
+              </a>
+              <div class="sample-info"><h3>Discovery Videos</h3><p>Long Videos · Replace with your project</p><div class="edit-tip">See this and hire me</div></div>
+            </article>
+            <article class="sample-card" data-type="shorts">
+              <a class="sample-thumb video-link" href="https://drive.google.com/drive/folders/1IdHoxoGrsrqZ23u_aefioAd9ocZc53H2?usp=sharing">
+                <span class="thumb-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg></span>
+              </a>
+              <div class="sample-info"><h3>Map Animations</h3><p>Shorts · Replace with your project</p><div class="edit-tip">See this and hire me</div></div>
+            </article>
+            <article class="sample-card" data-type="shorts">
+              <a class="sample-thumb video-link" href="https://drive.google.com/drive/folders/1wLR9HMkquhUKDvd53y1HufQrdjZX3x5K?usp=sharing">
+                <span class="thumb-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg></span>
+              </a>
+              <div class="sample-info"><h3>Reel / Social Edit</h3><p>Shorts · Replace with your project</p><div class="edit-tip">See this and hire me</div></div>
+            </article>
+            <article class="sample-card" data-type="long">
+              <a class="sample-thumb video-link" href="https://drive.google.com/drive/folders/14W1KJ4isdHc8oO9PZMmAW4T-xROjl2bl?usp=sharing">
+                <span class="thumb-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg></span>
+              </a>
+              <div class="sample-info"><h3>Visual Storytelling</h3><p>Long Videos · Replace with your project</p><div class="edit-tip">See this and hire me</div></div>
+            </article>
+            <article class="sample-card" data-type="shorts">
+              <a class="sample-thumb video-link" href="#" aria-label="Add your third Shorts sample link">
+                <span class="thumb-play"><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9.2 5.3c.7.4.7 1.4 0 1.8l-9.2 5.3c-.7.4-1.6-.1-1.6-.9V5.8Z"/></svg></span>
+              </a>
+              <div class="sample-info"><h3>Fast-Paced Short</h3><p>Shorts · Replace with your project</p><div class="edit-tip">Edit the title and link in index.html</div></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container about-grid">
+        <div class="about-mark">
+          <!-- OWNER ONLY: Put your portrait in assets/jasim-photo.jpg, or change this src in index.html. -->
+          <img class="about-photo" src="assets/jasim-photo.jpg" alt="Portrait of Syed Jasim Ali" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+          <strong class="about-initials">JA</strong>
+        </div>
+        <div class="about-copy">
+          <div class="section-label">A little about me</div>
+          <h2>Editing is more than cutting clips. It’s building a feeling.</h2>
+          <p>I’m Syed Jasim Ali, a video editor who helps creators and brands turn ideas into clear, compelling visual stories. I care about rhythm, detail, and making every shot serve the message.</p>
+          <p>Whether it’s a longer YouTube video or a short vertical edit, my goal is to make the content feel intentional, polished, and worth watching.</p>
+          <div class="skills">
+            <span class="skill">Video Editing</span><span class="skill">Storytelling</span><span class="skill">Pacing & Cuts</span><span class="skill">Sound Design</span><span class="skill">Color & Visuals</span><span class="skill">Short-form Content</span>
+          </div>
+          <div class="software-block">
+            <div class="software-heading">SOFTWARES I USE</div>
+            <!-- OWNER ONLY: Add/remove software tiles here by editing index.html. Put icon images in assets/icons/. -->
+            <div class="software-grid">
+              <div class="software-item"><img src="assets/icons/after-effects.png" alt="After Effects" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" /><span class="software-fallback">Ae</span><small>After Effects</small></div>
+              <div class="software-item"><img src="assets/icons/premiere-pro.png" alt="Premiere Pro" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" /><span class="software-fallback">Pr</span><small>Premiere Pro</small></div>
+              <div class="software-item"><img src="assets/icons/photoshop.png" alt="Photoshop" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" /><span class="software-fallback">Ps</span><small>Photoshop</small></div>
+              <div class="software-item"><img src="assets/icons/davinci-resolve.png" alt="DaVinci Resolve" onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';" /><span class="software-fallback">DR</span><small>DaVinci Resolve</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact">
+      <div class="container">
+        <div class="contact-panel">
+          <div>
+            <div class="section-label">Have a project?</div>
+            <h2>Let’s make something<br/>worth watching.</h2>
+            <p>Tell me what you’re creating, and let’s bring your next video to life.</p>
+            <div class="contact-details">
+              <a href="mailto:jasimali1008@gmail.com">✉ &nbsp; jasimali1008@gmail.com</a>
+              <a href="tel:+923350457822">☎ &nbsp; 0335 0457822</a>
+            </div>
+          </div>
+          <a class="btn btn-primary" href="https://wa.me/923350457822?text=Hi%20Jasim%2C%20I%27d%20like%20to%20discuss%20a%20video%20editing%20project." target="_blank" rel="noopener">Start a Project ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> Syed Jasim Ali. All rights reserved.</span>
+      <span>Designed for stories that stand out.</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><strong id="toastTitle">Portfolio</strong><small id="toastMessage">Ready</small></div>
+
+  <script>
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    function showToast(title, message) {
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    const tabs = document.querySelectorAll('.tab');
+    const cards = document.querySelectorAll('.sample-card');
+    function setFilter(filter) {
+      tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.filter === filter));
+      cards.forEach(card => card.classList.toggle('hidden', filter !== 'all' && card.dataset.type !== filter));
+    }
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      setFilter(tab.dataset.filter);
+      showToast('Portfolio filter', tab.textContent + ' selected');
+    }));
+    document.querySelectorAll('[data-filter-link]').forEach(link => {
+      link.addEventListener('click', () => {
+        const filter = link.dataset.filterLink;
+        setFilter(filter);
+        showToast('Work category', filter === 'long' ? 'Showing long-form videos' : 'Showing Shorts');
+      });
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.querySelectorAll('.video-link').forEach(link => {
+      link.addEventListener('click', event => {
+        if (link.getAttribute('href') === '#') {
+          event.preventDefault();
+          showToast('Sample placeholder', 'Add your YouTube, Google Drive, Vimeo, or other video URL in index.html.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
